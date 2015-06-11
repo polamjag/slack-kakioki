@@ -20,6 +20,7 @@ configure do
 
   enable :sessions
   set :sessions, key: "kakioki"
+  set :session_secret, SecureRandom.uuid
 end
 
 helpers do
