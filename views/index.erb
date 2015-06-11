@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kakioki System</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 1.15em;
+      }
+      .warn {
+        padding: .3em;
+        background: #cc7;
+        border: 1px solid #aa4;
+      }
+      .form-group {
+        margin: .7em 0;
+      }
+      .form-group * {
+        display: block;
+      }
+      label {
+        margin: .3em 0 .3em 0;
+      }
+      input[type=text], textarea {
+        font-size: 1em;
+        width: 99%;
+      }
+      textarea {
+        height: 4em;
+      }
+      input[type=submit] {
+        margin-top: 0.5em;
+        font-size: 2em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kakioki system</h1>
+    <% if session[:sent] %>
+      <p>
+        You already sent message at <%= session[:sent] %>. Thank you.
+      </p>
+    <% else %>
+      <p>NOTE: This message will sent via insecure connection. DO NOT write sensitive information here.</p>
+
+      <% unless session[:warn].nil? %>
+        <p class="warn">
+        <%= session[:warn] %>
+        <% session[:warn] = nil %>
+        </p>
+      <% end %>
+
+      <form method="POST" action="/kakioki">
+        <div class="form-group">
+          <label for="name">Your Name (Required)</label>
+          <input type="text" name="name" maxlength="100" required="required" value="<%= h session[:name] %>">
+        </div>
+        <div class="form-group">
+          <label for="payload">Message (Required)</label>
+          <textarea name="payload" required="required"><%= h session[:payload] %></textarea>
+        </div>
+        <div class="form-group">
+          <input type="submit">
+        </div>
+      </form>
+    <% end %>
+  </body>
+</html>
