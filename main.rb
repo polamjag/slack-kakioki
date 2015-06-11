@@ -28,12 +28,8 @@ helpers do
     Rack::Utils.escape_html text
   end
 
-  def build_message(from, payload)
-    if from.empty?
-      "Anonymous message at #{Time.now}\n----\n#{payload}"
-    else
-      "Message from #{from} at #{Time.now}\n----\n#{payload}"
-    end
+  def build_message(ip, from, payload)
+    "Message from #{from}, `#{ip}` at #{Time.now}\n----\n#{payload}"
   end
 end
 
@@ -58,7 +54,13 @@ post '/kakioki' do
   https.use_ssl = true
 
   req = Net::HTTP::Post.new uri.request_uri
-  req.body = { text: build_message(params[:name], params[:payload]) }.to_json
+  req.body = {
+    text: build_message(
+      (env["HTTP_X_FORWARDED_FOR"] || env["REMOTE_ADDR"]),
+      params[:name],
+      params[:payload]
+    )
+  }.to_json
   res = https.request(req)
 
   unless res.code == "200"
